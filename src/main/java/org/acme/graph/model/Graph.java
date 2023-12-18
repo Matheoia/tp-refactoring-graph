@@ -7,6 +7,8 @@ import java.util.List;
 import org.acme.graph.errors.NotFoundException;
 import org.locationtech.jts.geom.Coordinate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 
  * Un graphe matérialisé par une liste de sommets et d'arcs
@@ -34,14 +36,6 @@ public class Graph {
 		return vertices;
 	}
 
-	/**
-	 * Récupération de la liste arcs
-	 * 
-	 * @return
-	 */
-	public void setVertices(List<Vertex> vertices) {
-		this.vertices = vertices;
-	}
 
 	/**
 	 * Recherche d'un sommet par identifiant
@@ -50,6 +44,7 @@ public class Graph {
 	 * @return
 	 */
 	public Vertex findVertex(String id) {
+		
 		for (Vertex vertex : vertices) {
 			if (vertex.getId().equals(id)) {
 				return vertex;
@@ -110,15 +105,9 @@ public class Graph {
 	 * @param vertex
 	 * @return
 	 */
+	@JsonIgnore
 	public List<Edge> getInEdges(Vertex vertex) {
-		List<Edge> result = new ArrayList<>();
-		for (Edge candidate : edges) {
-			if (candidate.getTarget() != vertex) {
-				continue;
-			}
-			result.add(candidate);
-		}
-		return result;
+		return vertex.getInEdges();
 	}
 
 	/**
@@ -127,24 +116,46 @@ public class Graph {
 	 * @param vertex
 	 * @return
 	 */
+	@JsonIgnore
 	public List<Edge> getOutEdges(Vertex vertex) {
-		List<Edge> result = new ArrayList<>();
-		for (Edge candidate : edges) {
-			if (candidate.getSource() != vertex) {
-				continue;
-			}
-			result.add(candidate);
-		}
-		return result;
+		return vertex.getOutEdges();
 	}
 
-	/**
-	 * Définition de la liste des arcs
-	 * 
-	 * @param edges
-	 */
-	public void setEdges(List<Edge> edges) {
-		this.edges = edges;
+	
+	public Vertex createVertex(Coordinate coordinate, String id) {
+		
+		Vertex newVertex = new Vertex();
+		newVertex.setId(id);
+		newVertex.setCoordinate(coordinate);
+		this.getVertices().add(newVertex);
+		return newVertex;
 	}
+	
+	public Edge createEdge(Vertex source, Vertex target, String id) {
+		
+		Edge newEdge = new Edge(source, target);
+		newEdge.setId(id);
+		this.getEdges().add(newEdge);
+		return newEdge;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
